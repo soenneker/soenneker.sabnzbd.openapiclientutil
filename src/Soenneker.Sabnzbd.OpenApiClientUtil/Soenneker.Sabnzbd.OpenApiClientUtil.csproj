@@ -44,8 +44,8 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.Kiota.Abstractions" Version="2.0.0" />
-        <PackageReference Include="Soenneker.Extensions.Configuration" Version="4.0.852" />
+        <PackageReference Include="Soenneker.Extensions.Configuration" Version="4.0.853" />
         <PackageReference Include="Soenneker.Sabnzbd.HttpClients" Version="4.0.2" />
-        <PackageReference Include="Soenneker.Sabnzbd.OpenApiClient" Version="4.0.3" />
+        <PackageReference Include="Soenneker.Sabnzbd.OpenApiClient" Version="4.0.4" />
     </ItemGroup>
 </Project>
