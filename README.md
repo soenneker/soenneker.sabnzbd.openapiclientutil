@@ -2,24 +2,42 @@
 [![](https://img.shields.io/github/actions/workflow/status/soenneker/soenneker.sabnzbd.openapiclientutil/publish-package.yml?style=for-the-badge)](https://github.com/soenneker/soenneker.sabnzbd.openapiclientutil/actions/workflows/publish-package.yml)
 [![](https://img.shields.io/nuget/dt/soenneker.sabnzbd.openapiclientutil.svg?style=for-the-badge)](https://www.nuget.org/packages/soenneker.sabnzbd.openapiclientutil/)
 
-# ![](https://user-images.githubusercontent.com/4441470/224455560-91ed3ee7-f510-4041-a8d2-3fc093025112.png) Soenneker.Sabnzbd.OpenApiClientUtil
-### A thread-safe utility for obtaining SABnzbd's OpenAPI client singleton.
+# Soenneker.Sabnzbd.OpenApiClientUtil
 
-## Installation
+Exposes a cached OpenAPI client instance.
 
-```
+## Install
+
+```bash
 dotnet add package Soenneker.Sabnzbd.OpenApiClientUtil
 ```
 
-## Configuration
+## Quick start
 
-```json
-{
-  "Sabnzbd": {
-    "ClientBaseUrl": "http://localhost:8080",
-    "ApiKey": "your-api-key"
-  }
-}
+```csharp
+using Soenneker.Sabnzbd.OpenApiClientUtil.Registrars;
+using Microsoft.Extensions.DependencyInjection;
+
+var services = new ServiceCollection();
+var result = services.AddSabnzbdOpenApiClientUtilAsSingleton();
 ```
 
-`ClientBaseUrl` is the SABnzbd instance root and should not end in `/api`. The API key is sent using SABnzbd's `apikey` query parameter.
+Adds `SabnzbdOpenApiClientUtil` as a singleton service.
+
+## What you get
+
+- `ISabnzbdOpenApiClientUtil` — Exposes a cached OpenAPI client instance.
+- `SabnzbdOpenApiClientUtilRegistrar` — Registers the OpenAPI client utility for dependency injection.
+- `SabnzbdApiKeyAuthenticationProvider` — Adds a SABnzbd API key to Kiota requests as the `apikey` query parameter.
+
+## API at a glance
+
+| API | What it does | Result / important behavior |
+| --- | --- | --- |
+| `SabnzbdOpenApiClientUtilRegistrar.AddSabnzbdOpenApiClientUtilAsSingleton(services)` | Adds `SabnzbdOpenApiClientUtil` as a singleton service. | The same service collection, so additional registrations can be chained. |
+| `SabnzbdOpenApiClientUtilRegistrar.AddSabnzbdOpenApiClientUtilAsScoped(services)` | Adds `SabnzbdOpenApiClientUtil` as a scoped service. | The same service collection, so additional registrations can be chained. |
+
+## Practical notes
+
+- Reuse the registered client instead of constructing one per operation.
+- Dispose instances you own when their scope ends so held resources can be released.
