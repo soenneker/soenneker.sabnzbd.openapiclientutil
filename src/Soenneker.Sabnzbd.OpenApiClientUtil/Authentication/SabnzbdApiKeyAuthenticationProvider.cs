@@ -26,6 +26,13 @@ public sealed class SabnzbdApiKeyAuthenticationProvider : IAuthenticationProvide
         _allowedAuthority = baseAddress.Authority;
     }
 
+    /// <summary>
+    /// Authenticates request Async for the Sabnzbd API Key Authentication Provider.
+    /// </summary>
+    /// <param name="request">request that defines the request to send.</param>
+    /// <param name="additionalAuthenticationContext">additional Authentication Context to process.</param>
+    /// <param name="cancellationToken">Token used to cancel the operation.</param>
+    /// <returns>A task that completes when the authenticate request async operation is complete.</returns>
     public Task AuthenticateRequestAsync(RequestInformation request, Dictionary<string, object>? additionalAuthenticationContext = null,
         CancellationToken cancellationToken = default)
     {

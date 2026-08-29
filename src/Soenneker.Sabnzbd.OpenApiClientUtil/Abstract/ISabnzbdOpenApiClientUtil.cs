@@ -10,5 +10,10 @@ namespace Soenneker.Sabnzbd.OpenApiClientUtil.Abstract;
 /// </summary>
 public interface ISabnzbdOpenApiClientUtil : IDisposable, IAsyncDisposable
 {
+    /// <summary>
+    /// Returns the configured sabnzbd OpenAPI Client used by the Sabnzbd OpenAPI Client.
+    /// </summary>
+    /// <param name="cancellationToken">Token used to cancel the operation.</param>
+    /// <returns>A task whose result is the requested sabnzbd OpenAPI Client.</returns>
     ValueTask<SabnzbdOpenApiClient> Get(CancellationToken cancellationToken = default);
 }
