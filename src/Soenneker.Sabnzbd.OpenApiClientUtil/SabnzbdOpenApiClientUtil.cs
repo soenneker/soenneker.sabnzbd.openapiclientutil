@@ -14,7 +14,6 @@ using Soenneker.Utils.AsyncSingleton;
 
 namespace Soenneker.Sabnzbd.OpenApiClientUtil;
 
-/// <inheritdoc cref="ISabnzbdOpenApiClientUtil"/>
 public sealed class SabnzbdOpenApiClientUtil : ISabnzbdOpenApiClientUtil
 {
     private readonly AsyncSingleton<SabnzbdOpenApiClient> _client;

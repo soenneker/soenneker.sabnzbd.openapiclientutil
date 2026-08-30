@@ -1,43 +1,70 @@
 [![](https://img.shields.io/nuget/v/soenneker.sabnzbd.openapiclientutil.svg?style=for-the-badge)](https://www.nuget.org/packages/soenneker.sabnzbd.openapiclientutil/)
 [![](https://img.shields.io/github/actions/workflow/status/soenneker/soenneker.sabnzbd.openapiclientutil/publish-package.yml?style=for-the-badge)](https://github.com/soenneker/soenneker.sabnzbd.openapiclientutil/actions/workflows/publish-package.yml)
 [![](https://img.shields.io/nuget/dt/soenneker.sabnzbd.openapiclientutil.svg?style=for-the-badge)](https://www.nuget.org/packages/soenneker.sabnzbd.openapiclientutil/)
+[![](https://img.shields.io/github/actions/workflow/status/soenneker/soenneker.sabnzbd.openapiclientutil/codeql.yml?label=CodeQL&style=for-the-badge)](https://github.com/soenneker/soenneker.sabnzbd.openapiclientutil/actions/workflows/codeql.yml)
 
 # Soenneker.Sabnzbd.OpenApiClientUtil
 
-Exposes a cached OpenAPI client instance.
+A DI-ready, cached SABnzbd OpenAPI client with API-key authentication.
 
-## Install
+## Installation
 
 ```bash
 dotnet add package Soenneker.Sabnzbd.OpenApiClientUtil
 ```
 
-## Quick start
+## Configuration
+
+```json
+{
+  "Sabnzbd": {
+    "ClientBaseUrl": "http://localhost:8080",
+    "ApiKey": "your-api-key"
+  }
+}
+```
+
+`Sabnzbd:ApiKey` is required. `Sabnzbd:ClientBaseUrl` must be an absolute URI and defaults to `http://localhost:8080` when omitted.
+
+## Registration
 
 ```csharp
 using Soenneker.Sabnzbd.OpenApiClientUtil.Registrars;
-using Microsoft.Extensions.DependencyInjection;
 
-var services = new ServiceCollection();
-var result = services.AddSabnzbdOpenApiClientUtilAsSingleton();
+services.AddSabnzbdOpenApiClientUtilAsSingleton();
 ```
 
-Adds `SabnzbdOpenApiClientUtil` as a singleton service.
+For a scoped consumer, register a scoped utility:
 
-## What you get
+```csharp
+services.AddSabnzbdOpenApiClientUtilAsScoped();
+```
 
-- `ISabnzbdOpenApiClientUtil` — Exposes a cached OpenAPI client instance.
-- `SabnzbdOpenApiClientUtilRegistrar` — Registers the OpenAPI client utility for dependency injection.
-- `SabnzbdApiKeyAuthenticationProvider` — Adds a SABnzbd API key to Kiota requests as the `apikey` query parameter.
+The scoped registration deliberately retains the singleton HTTP client provider and transport. Disposing the utility at the end of a scope clears that utility's cached generated client, but does not destroy the underlying shared `HttpClient`.
 
-## API at a glance
+## Usage
 
-| API | What it does | Result / important behavior |
-| --- | --- | --- |
-| `SabnzbdOpenApiClientUtilRegistrar.AddSabnzbdOpenApiClientUtilAsSingleton(services)` | Adds `SabnzbdOpenApiClientUtil` as a singleton service. | The same service collection, so additional registrations can be chained. |
-| `SabnzbdOpenApiClientUtilRegistrar.AddSabnzbdOpenApiClientUtilAsScoped(services)` | Adds `SabnzbdOpenApiClientUtil` as a scoped service. | The same service collection, so additional registrations can be chained. |
+```csharp
+using Soenneker.Sabnzbd.OpenApiClient;
+using Soenneker.Sabnzbd.OpenApiClient.Models;
+using Soenneker.Sabnzbd.OpenApiClientUtil.Abstract;
 
-## Practical notes
+public sealed class SabnzbdHistoryReader(ISabnzbdOpenApiClientUtil clientUtil)
+{
+    public async Task<ApiCommandResponse?> GetHistory(CancellationToken cancellationToken)
+    {
+        SabnzbdOpenApiClient client = await clientUtil.Get(cancellationToken);
 
-- Reuse the registered client instead of constructing one per operation.
-- Dispose instances you own when their scope ends so held resources can be released.
+        return await client.Api.GetAsync(request =>
+        {
+            request.QueryParameters.Mode = Mode.History;
+            request.QueryParameters.Output = Output.Json;
+            request.QueryParameters.Limit = 50;
+        }, cancellationToken);
+    }
+}
+```
+
+The generated client is created lazily on the first `Get` call and then reused by that utility instance. Configuration is read when the client is created; recreate the utility if the base URL or API key changes.
+
+The authentication provider adds `apikey` only when the resolved request scheme and authority match the configured SABnzbd base address. It does not add the key to a request built with a URL on another host.

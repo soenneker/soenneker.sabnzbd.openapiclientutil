@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 namespace Soenneker.Sabnzbd.OpenApiClientUtil.Abstract;
 
 /// <summary>
-/// Exposes a cached OpenAPI client instance.
+/// Provides a lazily created, cached SABnzbd OpenAPI client.
 /// </summary>
 public interface ISabnzbdOpenApiClientUtil : IDisposable, IAsyncDisposable
 {
     /// <summary>
-    /// Returns the configured sabnzbd OpenAPI Client used by the Sabnzbd OpenAPI Client.
+    /// Gets the authenticated SABnzbd OpenAPI client for this utility instance.
     /// </summary>
     /// <param name="cancellationToken">Token used to cancel the operation.</param>
-    /// <returns>A task whose result is the requested sabnzbd OpenAPI Client.</returns>
+    /// <returns>The cached generated client.</returns>
     ValueTask<SabnzbdOpenApiClient> Get(CancellationToken cancellationToken = default);
 }
