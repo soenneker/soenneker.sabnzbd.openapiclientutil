@@ -12,7 +12,7 @@ namespace Soenneker.Sabnzbd.OpenApiClientUtil.Authentication;
 /// </summary>
 public sealed class SabnzbdApiKeyAuthenticationProvider : IAuthenticationProvider
 {
-    private readonly string _apiKey;
+    private readonly string _apiKeyParameter;
     private readonly string _allowedScheme;
     private readonly string _allowedAuthority;
 
@@ -21,7 +21,7 @@ public sealed class SabnzbdApiKeyAuthenticationProvider : IAuthenticationProvide
         ArgumentException.ThrowIfNullOrWhiteSpace(apiKey);
         ArgumentNullException.ThrowIfNull(baseAddress);
 
-        _apiKey = apiKey;
+        _apiKeyParameter = $"apikey={Uri.EscapeDataString(apiKey)}";
         _allowedScheme = baseAddress.Scheme;
         _allowedAuthority = baseAddress.Authority;
     }
@@ -46,9 +46,8 @@ public sealed class SabnzbdApiKeyAuthenticationProvider : IAuthenticationProvide
 
         var builder = new UriBuilder(uri);
         string query = uri.Query.TrimStart('?');
-        string apiKeyParameter = $"apikey={Uri.EscapeDataString(_apiKey)}";
 
-        builder.Query = string.IsNullOrEmpty(query) ? apiKeyParameter : $"{query}&{apiKeyParameter}";
+        builder.Query = string.IsNullOrEmpty(query) ? _apiKeyParameter : $"{query}&{_apiKeyParameter}";
         request.URI = builder.Uri;
 
         return Task.CompletedTask;
