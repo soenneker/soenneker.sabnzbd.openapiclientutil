@@ -20,7 +20,7 @@ public sealed class SabnzbdOpenApiClientUtilTests : HostedUnitTest
     }
 
     [Test]
-    public async Task Authentication_provider_adds_apikey_query_parameter(CancellationToken cancellationToken)
+    public async ValueTask Authentication_provider_adds_apikey_query_parameter(CancellationToken cancellationToken)
     {
         var provider = new SabnzbdApiKeyAuthenticationProvider("test-api-key", new Uri("http://localhost:8080"));
         var request = new RequestInformation
@@ -37,7 +37,7 @@ public sealed class SabnzbdOpenApiClientUtilTests : HostedUnitTest
     }
 
     [Test]
-    public async Task Authentication_provider_does_not_send_key_to_another_host(CancellationToken cancellationToken)
+    public async ValueTask Authentication_provider_does_not_send_key_to_another_host(CancellationToken cancellationToken)
     {
         var provider = new SabnzbdApiKeyAuthenticationProvider("test-api-key", new Uri("http://localhost:8080"));
         var request = new RequestInformation
@@ -51,7 +51,7 @@ public sealed class SabnzbdOpenApiClientUtilTests : HostedUnitTest
     }
 
     [Test]
-    public async Task Get_returns_generated_client(CancellationToken cancellationToken)
+    public async ValueTask Get_returns_generated_client(CancellationToken cancellationToken)
     {
         SabnzbdOpenApiClient client = await _openapiclientutil.Get(cancellationToken: cancellationToken);
 
