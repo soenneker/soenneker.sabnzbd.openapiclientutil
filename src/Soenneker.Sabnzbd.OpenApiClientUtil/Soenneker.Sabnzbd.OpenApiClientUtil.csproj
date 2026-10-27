@@ -47,6 +47,6 @@
 
     <ItemGroup>
         <PackageReference Include="Soenneker.Sabnzbd.HttpClients" Version="4.0.80" />
-        <PackageReference Include="Soenneker.Sabnzbd.OpenApiClient" Version="4.0.31" />
+        <PackageReference Include="Soenneker.Sabnzbd.OpenApiClient" Version="11.0.33" />
     </ItemGroup>
 </Project>
